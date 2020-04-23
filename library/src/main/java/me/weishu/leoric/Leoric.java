@@ -20,6 +20,7 @@ package me.weishu.leoric;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -45,6 +46,7 @@ public class Leoric {
     }
 
 
+    //  no_use tmp
     private final String DAEMON_PERMITTING_SP_FILENAME = "d_permit";
     private final String DAEMON_PERMITTING_SP_KEY = "permitted";
 
@@ -58,6 +60,7 @@ public class Leoric {
 
         String processName = getProcessName();
         String packageName = base.getPackageName();
+        Log.i("MYTEST", processName);
 
         if (processName.startsWith(mConfigurations.PERSISTENT_CONFIG.processName)) {
             ILeoricProcess.Fetcher.fetchStrategy().onPersistentCreate(base, mConfigurations);

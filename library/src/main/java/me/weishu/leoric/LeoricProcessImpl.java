@@ -34,13 +34,13 @@ import java.lang.reflect.Field;
 
 public class LeoricProcessImpl implements ILeoricProcess {
 
-    private static final String TAG = "LeoricProcessImpl";
+    private static final String TAG = "MYTESTLeoricProcessImpl";
 
     private final static String INDICATOR_DIR_NAME = "indicators";
-    private final static String INDICATOR_PERSISTENT_FILENAME = "indicator_p";
-    private final static String INDICATOR_DAEMON_ASSISTANT_FILENAME = "indicator_d";
-    private final static String OBSERVER_PERSISTENT_FILENAME = "observer_p";
-    private final static String OBSERVER_DAEMON_ASSISTANT_FILENAME = "observer_d";
+    private final static String INDICATOR_PERSISTENT_FILENAME = "indicator_persistent";
+    private final static String INDICATOR_DAEMON_ASSISTANT_FILENAME = "indicator_daemon";
+    private final static String OBSERVER_PERSISTENT_FILENAME = "observer_persistent";
+    private final static String OBSERVER_DAEMON_ASSISTANT_FILENAME = "observer_daemon";
 
     private IBinder mRemote;
     private Parcel mServiceData;
@@ -128,6 +128,7 @@ public class LeoricProcessImpl implements ILeoricProcess {
 // when processName dead, we should save time to restart and kill self, don`t take a waste of time to recycle
     private void initServiceParcel(Context context, String serviceName) {
         Intent intent = new Intent();
+        Log.i("MYTEST", "init service" + serviceName);
         ComponentName component = new ComponentName(context.getPackageName(), serviceName);
         intent.setComponent(component);
 
@@ -142,6 +143,7 @@ public class LeoricProcessImpl implements ILeoricProcess {
             mServiceData.writeInt(1);
             intent.writeToParcel(mServiceData, 0);
             mServiceData.writeString(null);
+            //                                                targetSdkVersion = 29 > 26
             mServiceData.writeInt(context.getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.O ? 1 : 0);
             mServiceData.writeString(context.getPackageName());
             mServiceData.writeInt(0);
@@ -154,6 +156,15 @@ public class LeoricProcessImpl implements ILeoricProcess {
             mServiceData.writeString(context.getPackageName());
             mServiceData.writeInt(0);
         }
+        /*
+            token   "android.app.IActivityManager"
+            stongBinder null
+            if android 8 -> int 1
+            intent
+            null
+            string  "packagename"
+            int 0
+         */
 
     }
 

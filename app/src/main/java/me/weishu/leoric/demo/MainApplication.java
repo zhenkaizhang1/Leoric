@@ -30,12 +30,12 @@ public class MainApplication extends Application {
         super.attachBaseContext(base);
         Leoric.init(base, new LeoricConfigs(
                 new LeoricConfigs.LeoricConfig(
-                        getPackageName() + ":resident",
+                        getPackageName() + ":persistent",
                         Service1.class.getCanonicalName(),
                         Receiver1.class.getCanonicalName(),
                         Activity1.class.getCanonicalName()),
                 new LeoricConfigs.LeoricConfig(
-                        getPackageName()+":media",
+                        getPackageName()+":daemon",
                         Service2.class.getCanonicalName(),
                         Receiver2.class.getCanonicalName(),
                         Activity2.class.getCanonicalName())

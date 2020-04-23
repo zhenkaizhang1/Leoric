@@ -1,0 +1,24 @@
+Application 
+	(startService)-> service1 (常驻进程)
+	(Binder start)-> service2（守护进程）
+
+
+常驻进程：
+	反射AMS Binder
+	填充服务Parcel <--- 守护进程配置（parcel 不执行 recycle 以节省时间）
+	启动服务（守护进程）
+	启动线程：
+		监听文件（native） 
+			常驻进程文件名
+			守护进程文件名
+			常驻文件观察文件名
+			守护进程观察文件名
+守护进程：
+		反射AMS Binder
+	启动服务（常驻进程）
+	启动线程：
+		监听文件（native） 
+			常驻进程文件名
+			守护进程文件名
+			常驻文件观察文件名
+			守护进程观察文件名
