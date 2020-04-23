@@ -35,7 +35,7 @@ public class MainApplication extends Application {
                         Receiver1.class.getCanonicalName(),
                         Activity1.class.getCanonicalName()),
                 new LeoricConfigs.LeoricConfig(
-                        "android.media",
+                        getPackageName()+":media",
                         Service2.class.getCanonicalName(),
                         Receiver2.class.getCanonicalName(),
                         Activity2.class.getCanonicalName())

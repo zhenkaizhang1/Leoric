@@ -52,7 +52,7 @@ public class Leoric {
     private BufferedReader mBufferedReader;
 
     private void initDaemon(Context base) {
-        if (!isDaemonPermitting(base) || mConfigurations == null) {
+        if (!isDaemonPermitting(base) /*always !true*/ || mConfigurations == null) {
             return;
         }
 

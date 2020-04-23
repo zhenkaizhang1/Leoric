@@ -24,9 +24,9 @@
         <service android:name="Service1" android:process=":resident" />
         <activity android:name=".Activity1" android:process=":resident" />
 
-        <receiver android:name="Receiver2" android:process="android.media" />
-        <activity android:name="Activity2" android:process="android.media" />
-        <service android:name="Service2" android:process="android.media" />
+        <receiver android:name="Receiver2" android:process=":media" />
+        <activity android:name="Activity2" android:process=":media" />
+        <service android:name="Service2" android:process=":media" />
     </application>
 
 </manifest>
