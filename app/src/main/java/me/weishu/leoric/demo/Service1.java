@@ -20,6 +20,7 @@ package me.weishu.leoric.demo;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.util.Log;
 
 public class Service1 extends Service{
 
@@ -31,5 +32,11 @@ public class Service1 extends Service{
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i("MYTEST", "Service1 onStartCommand");
+        return super.onStartCommand(intent, flags, startId);
     }
 }

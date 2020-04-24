@@ -207,14 +207,9 @@ public class LeoricProcessImpl implements ILeoricProcess {
         if (!dirFile.exists()) {
             dirFile.mkdirs();
         }
-        try {
-            createNewFile(dirFile, INDICATOR_PERSISTENT_FILENAME);
-            createNewFile(dirFile, INDICATOR_DAEMON_ASSISTANT_FILENAME);
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
+        //            createNewFile(dirFile, INDICATOR_PERSISTENT_FILENAME);
+//            createNewFile(dirFile, INDICATOR_DAEMON_ASSISTANT_FILENAME);
+        return true;
     }
 
     private void createNewFile(File dirFile, String fileName) throws IOException {

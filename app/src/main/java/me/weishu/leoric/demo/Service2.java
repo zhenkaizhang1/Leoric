@@ -20,6 +20,7 @@ package me.weishu.leoric.demo;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.util.Log;
 
 public class Service2 extends Service{
 
@@ -30,6 +31,7 @@ public class Service2 extends Service{
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i("MYTEST", "Service2: START_NOT_STICKY");
         return Service.START_NOT_STICKY;
     }
 }

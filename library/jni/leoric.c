@@ -101,25 +101,27 @@ void notify_and_waitfor(char *observer_self_path, char *observer_daemon_path) {
     int observer_daemon_descriptor = open(observer_daemon_path, O_RDONLY);
     while (observer_daemon_descriptor == -1) {
         usleep(1000);
+        LOGD("MYTEST wait for daemon file create %s", observer_daemon_path);
         observer_daemon_descriptor = open(observer_daemon_path, O_RDONLY);
     }
     remove(observer_daemon_path);
-    LOGE("Watched >>>>OBSERVER<<<< has been ready...");
+    LOGE("MYTEST daemon file has create %s", observer_daemon_path);
 }
 
 
 int lock_file(char *lock_file_path) {
-    LOGD("start try to lock file >> %s <<", lock_file_path);
+    LOGD("MYTEST start try to lock file >> %s <<", lock_file_path);
     int lockFileDescriptor = open(lock_file_path, O_RDONLY);
     if (lockFileDescriptor == -1) {
         lockFileDescriptor = open(lock_file_path, O_CREAT, S_IRUSR);
     }
+    LOGD("MYTEST open success", lock_file_path);
     int lockRet = flock(lockFileDescriptor, LOCK_EX);
     if (lockRet == -1) {
-        LOGE("lock file failed >> %s <<", lock_file_path);
+        LOGE("MYTEST lock file failed >> %s <<", lock_file_path);
         return 0;
     } else {
-        LOGD("lock file success  >> %s <<", lock_file_path);
+        LOGD("MYTEST lock file success  >> %s <<", lock_file_path);
         return 1;
     }
 }
@@ -144,12 +146,14 @@ void do_daemon(JNIEnv *env, jobject jobj, char *indicator_self_path, char *indic
         return;
     }
 
+    //  等待各进程完成对自身代表的持有
     notify_and_waitfor(observer_self_path, observer_daemon_path);
 
+    //  尝试获取守护进程的文件
     lock_status = lock_file(indicator_daemon_path);
     if (lock_status) {
         LOGE("Watch >>>>DAEMON<<<<< Daed !!");
-        remove(observer_self_path);// it`s important ! to prevent from deadlock
+        remove(observer_self_path);// 守护进程挂了 需要将代表收回，以便新的进程再次创建锁定
         java_callback(env, jobj, DAEMON_CALLBACK_NAME);
     }
 }
@@ -161,11 +165,11 @@ void create_file_if_not_exist(char *path) {
     }
 }
 
-void set_process_name(JNIEnv *env) {
+void set_process_name(JNIEnv *env, char *process_name) {
     jclass process = (*env)->FindClass(env, "android/os/Process");
     jmethodID setArgV0 = (*env)->GetStaticMethodID(env, process, "setArgV0",
                                                    "(Ljava/lang/String;)V");
-    jstring name = (*env)->NewStringUTF(env, "app_d");
+    jstring name = (*env)->NewStringUTF(env, process_name);
     (*env)->CallStaticVoidMethod(env, process, setArgV0, name);
 }
 
@@ -188,18 +192,25 @@ Java_me_weishu_leoric_NativeLeoric_doDaemon(JNIEnv *env, jobject jobj,
 
 
     pid_t pid;
+    /*
+     *  fork()以后，两个进程继续往下执行
+     *  本体进程对应的返回值 为分身进程pid
+     *  分身进程对应的返回值为 0
+     *
+     * */
+
     if ((pid = fork()) < 0) {
         printf("fork 1 error\n");
         exit(-1);
-    } else if (pid == 0) { //第一个子进程
+    } else if (pid == 0) { //分身1进程
         if ((pid = fork()) < 0) {
             printf("fork 2 error\n");
             exit(-1);
         } else if (pid > 0) {
-            // 托孤
+            // 托孤 ->  分身1进程退出 留下分身2 孤儿进程
             exit(0);
         }
-
+        //分身2 孤儿进程
         LOGD("mypid: %d", getpid());
         const int MAX_PATH = 256;
         char indicator_self_path_child[MAX_PATH];
@@ -222,13 +233,13 @@ Java_me_weishu_leoric_NativeLeoric_doDaemon(JNIEnv *env, jobject jobj,
         create_file_if_not_exist(indicator_self_path_child);
         create_file_if_not_exist(indicator_daemon_path_child);
 
-        set_process_name(env);
+        set_process_name(env, indicator_self_path_child);
 
         do_daemon(env, jobj, indicator_self_path_child, indicator_daemon_path_child,
                   observer_self_path_child, observer_daemon_path_child);
         return;
     }
-
+    //  本体进程， pid 为分身1
     if (waitpid(pid, NULL, 0) != pid)
         printf("waitpid error\n");
 
